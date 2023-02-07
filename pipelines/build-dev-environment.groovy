@@ -60,7 +60,7 @@ pipeline {
                       """
 
                       sh """
-                      docker build pipelines/Dockfile-postegresql -t $params.ENVIRONMENT_NAME:latest
+                      docker build pipelines/ -f Dockerfile-postegresql -t $params.ENVIRONMENT_NAME:latest
                       """
                     } else {
                       error("Error: choose a valid RDBMS '$params.RDBMS'.")
