@@ -1,9 +1,9 @@
-CREATE DATABASE devapp;
+CREATE DATABASE DEVAPP;
 CREATE USER developer WITH LOGIN PASSWORD '<PASSWORD>';
-GRANT CREATE, ALTER, DROP, USAGE, CREATE ON SCHEMA public to developer;
-GRANT INSERT, UPDATE, DELETE, SELECT, REFERENCES, RELOAD on all tables in schema public to developer;
+GRANT CREATE, DROP, USAGE, CREATE ON SCHEMA public to developer;
+GRANT INSERT, UPDATE, DELETE, SELECT, REFERENCES, RELOAD, ALTER on all tables in schema public to developer;
 
-CREATE TABLE devapp.departments (
-dept SMALLINT,
-dept_name varchar(250)
+CREATE TABLE DEVAPP.departments (
+DEPT SMALLINT,
+DEPT_NAME varchar(250)
 );
