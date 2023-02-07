@@ -16,12 +16,24 @@ pipeline {
     }
   
     stages {
+        stage('Validate MYSQL_PORT') {
+            steps {
+                script{
+                    def port = params.MYSQL_PORT
+                    if (!port.isNumber() || !(port.toInteger() >= 1024 && port.toInteger() <= 65535)) {
+                       error("Error: MYSQL_PORT must be a number between 1024 and 65535.")
+                    } else {
+                       println "Port is valid."
+                    }
+                }
+            }
+        }
         stage('Checkout GIT repository') {
             steps {     
               script {
                 git branch: 'master',
-                credentialsId: '21f01d09-06da9cc35103',
-                url: 'git@mysecret-nonexistent-repo/jenkins.git'
+                credentialsId: "${env.credentialsId}",
+                url: 'git@github.com:lcosta/jenkins.git'
               }
             }
         }
@@ -30,8 +42,9 @@ pipeline {
               script {
                 if (!params.SKIP_STEP_1){    
                     echo "Creating docker image with name $params.ENVIRONMENT_NAME using port: $params.MYSQL_PORT"
+                    
                     sh """
-                    sed 's/<PASSWORD>/$params.MYSQL_PASSWORD/g' pipelines/include/create_developer.template > pipelines/include/create_developer.sql
+                    sed 's/<PASSWORD>/${params.MYSQL_PASSWORD}/g' pipelines/include/create_developer.template > pipelines/include/create_developer.sql
                     """
 
                     sh """
@@ -50,10 +63,28 @@ pipeline {
                 
                 def dateTime = (sh(script: "date +%Y%m%d%H%M%S", returnStdout: true).trim())
                 def containerName = "${params.ENVIRONMENT_NAME}_${dateTime}"
+
+                sh """
+                containers=\$(docker container ls --filter "expose=$params.MYSQL_PORT" --format "{{.ID}}")
+                if [ -n "\$containers" ]; then
+                  echo "Stopping containers:"
+                  echo "\$containers"
+                  echo "\$containers" | xargs docker stop
+                else
+                  echo "No containers found with port $params.MYSQL_PORT exposed"
+                fi
+                """
+                
                 sh """
                 docker run -itd --name ${containerName} --rm -e MYSQL_ROOT_PASSWORD=$params.MYSQL_PASSWORD -p $params.MYSQL_PORT:3306 $params.ENVIRONMENT_NAME:latest
                 """
 
+                sh """
+                while ! docker exec ${containerName} /bin/bash -c 'mysql --user="root" --password="$params.MYSQL_PASSWORD" -e "SELECT 1"' >/dev/null 2>&1; do
+                    sleep 1
+                done
+                """
+                
                 sh """
                 docker exec ${containerName} /bin/bash -c 'mysql --user="root" --password="$params.MYSQL_PASSWORD" < /scripts/create_developer.sql'
                 """
