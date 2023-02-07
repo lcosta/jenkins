@@ -37,6 +37,11 @@ This archive contains all the files being used by the current version of the pip
     - DEPT_NAME - varchar 250
 - Please share any observation / recommendation you might have on this process
 
+## My observations (lcosta)
+- The groovy script can be optimized for improved efficiency by utilizing Jenkins plugins for tasks such as interacting with Docker. It's worth noting that there is a minimal overhead associated with starting Docker containers, however, this will be addressed in future releases of the pipeline.
+- To enhance clarity, it may be beneficial to re-arrange the steps in the script. Additionally, certain instances of the 'sh' command usage may be redundant and can be accomplished within the groovy script itself.
+- As a best practice in secure scripting, it is important to avoid exposing credentials in any script, even if it is executed locally. The risk of these sensitive details being inadvertently uploaded to an online repository is significant, and therefore, it is essential to maintain secure practices in script development.
+
 ## Optional
 - Extend the pipeline with ability to switch database engine and implement the same scope using either:
     - [OracleXE](https://container-registry.oracle.com/ords/f?p=113:4:3559407972469:::4:P4_REPOSITORY,AI_REPOSITORY,AI_REPOSITORY_NAME,P4_REPOSITORY_NAME,P4_EULA_ID,P4_BUSINESS_AREA_ID:803,803,Oracle%20Database%20Express%20Edition,Oracle%20Database%20Express%20Edition,1,0&cs=3DRUVeYjFotraARk1_SIQT-gpXHdclgNeRODkR0y5bUs8pMZHRZgRESapOWM2F4DJVgxuFhP_eLjQZFewWuqYRw)
