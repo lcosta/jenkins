@@ -1,0 +1,8 @@
+CREATE DATABASE devapp;
+CREATE USER developer WITH LOGIN PASSWORD '<PASSWORD>';
+GRANT CREATE, ALTER, DROP, INSERT, UPDATE, DELETE, SELECT, REFERENCES, RELOAD on all tables in schema public to developer;
+
+CREATE TABLE devapp.departments (
+	dept SMALLINT,
+	dept_name varchar(250)
+);
