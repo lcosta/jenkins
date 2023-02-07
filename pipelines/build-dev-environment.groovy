@@ -56,11 +56,11 @@ pipeline {
                     }
                     else if("postgresql" == params.RDBMS.toLowerCase()){
                       sh """
-                      sed 's/<PASSWORD>/${params.DB_PASSWORD}/g' pipelines/include/create_developer_postgresql.template > pipelines/include/create_developer_postgresql.sql
+                      sed 's/<PASSWORD>/${params.DB_PASSWORD}/g' pipelines/PostgreSQL/include/create_developer.template > pipelines/PostgreSQL/include/create_developer.sql
                       """
 
                       sh """
-                      docker build pipelines/ -f Dockerfile-postegresql -t $params.ENVIRONMENT_NAME:latest
+                      docker build pipelines/PostgreSQL/ -t $params.ENVIRONMENT_NAME:latest 
                       """
                     } else {
                       error("Error: choose a valid RDBMS '$params.RDBMS'.")
